@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Judge with Chatbot</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <style>
+        #codebox {
+            height: 800px;
+            border: 1px solid black;
+            overflow-y: scroll;
+            display: none; /* Initially hidden */
+        }
+        #problemList {
+            display: none; /* Initially hidden */
+        }
+        #addList {
+            height: 400px;
+            border: 1px solid black;
+            overflow-y: scroll;
+            display: none; /* Initially hidden */
+        }
+        .container {
+          margin-top: 20px;
+
+        }
+         .correct {
+             color: green; /* 또는 다른 원하는 스타일을 적용하세요 */
+         }
+
+        .incorrect {
+            color: red; /* 또는 다른 원하는 스타일을 적용하세요 */
+        }
+        .description-box {
+            border: 1px solid black;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        *{ margin: 0; padding: 0; }
+
+        .chat_wrap .header { font-size: 14px; padding: 15px 0; background: #F18C7E; color: white; text-align: center;  }
+
+        .chat_wrap .chat { padding-bottom: 80px; }
+        .chat_wrap .chat ul { width: 100%; list-style: none; }
+        .chat_wrap .chat ul li { width: 100%; }
+        .chat_wrap .chat ul li.left { text-align: left; }
+        .chat_wrap .chat ul li.right { text-align: right; }
+
+        .chat_wrap .chat ul li > div { font-size: 13px;  }
+        .chat_wrap .chat ul li > div.sender { margin: 10px 20px 0 20px; font-weight: bold; }
+        .chat_wrap .chat ul li > div.message { display: inline-block; word-break:break-all; margin: 5px 20px; max-width: 75%; border: 1px solid #888; padding: 10px; border-radius: 5px; background-color: #FCFCFC; color: #555; text-align: left; }
+
+        .chat_wrap .input-div { position: fixed; bottom: 0; width: 100%; background-color: #FFF; text-align: center; border-top: 1px solid #F18C7E; }
+        .chat_wrap .input-div > textarea { width: 100%; height: 80px; border: none; padding: 10px; }
+
+        .format { display: none; }
+
+    </style>
+</head>
+
+<body class="bg-light">
+
+<div class="container">
+    <div class="text-center">
+        <button onclick="showChat()" class='btn btn-primary'>Chat Room</button>
+        <button onclick="showProblems()" class='btn btn-primary'>OnlineJudge</button>
+    </div>
+
+    <div id="chatbox" class='mt-3 p-3 bg-white rounded'>
+        <div class="chat_wrap">
+            <div class="header">
+                Python CHAT
+            </div>
+            <div class="chat">
+                <ul>
+                    <!-- 동적 생성 -->
+                </ul>
+            </div>
+            <div class="input-div">
+                <textarea placeholder="Press Enter for send message."></textarea>
+            </div>
+
+            <!-- format -->
+
+            <div class="chat format">
+                <ul>
+                    <li>
+                        <div class="sender">
+                            <span></span>
+                        </div>
+                        <div class="message">
+                            <span></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="addList" class='mt-3 p-3 bg-white rounded' style="height: 800px; overflow-y: scroll; display: none;">
+        <input type="text" id="newProblemName" placeholder="Type your code name, Do not use spaces." class='form-control'>
+        <textarea id="newProblemCode" placeholder="Type your code" class='form-control' rows="10"></textarea>
+        <textarea id="newProblemDescription" placeholder="Type your code info" class='form-control' rows="10"></textarea>
+        <button onclick="add()" class='btn btn-success mt-2'>Add</button>
+    </div>
+    <script>
+        // Tab 키 입력 처리
+        document.getElementById('newProblemCode').addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault(); // 기본 동작 방지
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                var value = $(this).val(); // Tab 대신 스페이스 4칸 입력
+                $(this).val(value.substring(0, start) + "    " + value.substring(end));
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+    </script>
+    <div id="problemList" class='mt-3 p-3 bg-white rounded'>
+        <h4>Problems:</h4>
+        <ul id='problems' style='list-style-type:none;'>
+        </ul>
+        <button onclick="showList()" class='btn btn-success mt-2'>Add</button>
+        <button onclick="del()" class='btn btn-success mt-2'>Delete</button>
+    </div>
+
+    <div id='codebox' style='display:none;' class='mt-3 p-3 bg-white rounded'>
+    <!-- Replace 'Problem' with actual problem description -->
+    <h4>Problem:</h4>
+        <ul id='name' style='list-style-type:none;'>
+        </ul>
+    <p>Description:</p>
+        <div id='description' class="description-box">
+        </div>
+    <div class="form-group">
+        <label for="output">Output:</label>
+        <textarea id="output" class="form-control" rows="5" cols="50" readonly></textarea>
+    </div>
+    <div class="form-group">
+        <label for="code">Code:</label>
+        <textarea id="code" class="form-control" rows="10" cols="50"></textarea>
+    </div>
+        <button class="btn btn-success" onclick="send()">Submit Code</button><br/>
+    <p>Result:</p>
+        <ul id='Queryresult' style='list-style-type:none;'></ul>
+    </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    const Chat = (function(){
+        const myName = "User";
+
+        // init 함수
+        function init() {
+            // enter 키 이벤트
+            $(document).on('keydown', 'div.input-div textarea', function(e){
+                if(e.keyCode == 9) {
+                    e.preventDefault();
+                    var textarea = $(this)[0];
+                    var start = textarea.selectionStart;
+                    var end = textarea.selectionEnd;
+                    var value = textarea.value;
+                    textarea.value = value.substring(0, start) + "    " + value.substring(end);
+                    textarea.selectionStart = textarea.selectionEnd = start + 4;
+                } else if(e.keyCode == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    const message = $(this).val();
+
+                    // 메시지 전송
+                    sendMessage(message);
+                    appendMessageTag("right", "User", message);
+                    // 입력창 clear
+                    clearTextarea();
+                }
+            });
+        }
+
+        // 메세지 태그 생성
+        function createMessageTag(LR_className, senderName, message) {
+            // 형식 가져오기
+            let chatLi = $('div.chat.format ul li').clone();
+
+            // 값 채우기
+            chatLi.addClass(LR_className);
+            chatLi.find('.sender span').text(senderName);
+            chatLi.find('.message span').text(message);
+
+            return chatLi;
+        }
+
+        // 메세지 태그 append
+        function appendMessageTag(LR_className, senderName, message) {
+            const chatLi = createMessageTag(LR_className, senderName, message);
+
+            $('div.chat:not(.format) ul').append(chatLi);
+
+            // 스크롤바 아래 고정
+            $('div.chat').scrollTop($('div.chat').prop('scrollHeight'));
+        }
+
+        // 메세지 전송
+        function sendMessage(message) {
+            // 서버에 전송하는 코드로 후에 대체
+            const userchat = {
+                "name"    : "User",
+                "text"    : message
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/chatting', // REST API 엔드포인트 URL
+                contentType: 'application/json',
+                data: JSON.stringify(userchat),
+                success: function (data) {
+                    appendMessageTag("left", "ChatBot", data);
+
+                    $('div.chat').scrollTop($('div.chat').prop('scrollHeight'))
+
+                },
+                error: function (error) {
+                    // 서버에 문제를 추가하는 중 오류가 발생한 경우의 처리 로직
+                    alert('Error adding problem: ' + error.responseText);
+                }
+            });
+            // 통신하는 기능이 없으므로 여기서 receive
+        }
+
+        // 메세지 입력박스 내용 지우기
+        function clearTextarea() {
+            $('div.input-div textarea').val('');
+        }
+
+        return {
+            'init': init
+        };
+    })();
+
+    $(function(){
+        Chat.init();
+    });
+
+    $(document).ready(function() {
+        $.ajax({
+            type: 'GET',
+            url: '/api/problems/all',  // 모든 문제들을 가져오는 API 엔드포인트 URL
+            success:function(data){
+                for(var i=0; i<data.length; i++) {
+                    $('#problems').append('<li>' + data[i].name +
+                        '<button onclick=\'testProblem("' +
+                        data[i].name +
+                        '", "' +
+                        data[i].description +
+                        '", "' +
+                        escapeSpecialChars(data[i].code) +
+                        '")\' class=\'btn btn-primary btn-sm ml-2\'>Test</button></li>');
+                }
+            },
+            error:function(error){
+                console.log('Error:', error);
+            }
+        });
+    });
+
+    function showChat() { $('#chatbox').show(); $('#problemList').hide(); $('#codebox').hide(); $('#addList').hide(); }
+
+    function showProblems() { $('#chatbox').hide(); $('#problemList').show(); $('#addList').hide(); }
+
+    function showList() { $('#chatbox').hide(); $('#problemList').hide(); $('#addList').show(); }
+
+    function add() {
+        var name = document.getElementById('newProblemName').value;
+        var description = document.getElementById('newProblemDescription').value;
+        var code = document.getElementById('newProblemCode').value;
+
+        if (name && description && code) {
+            var problemData = {
+                name: name,
+                description: description,
+                code: code, // Tab 키를 누를 경우 스페이스 세 번으로 변경
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/problems/add', // REST API 엔드포인트 URL
+                contentType: 'application/json',
+                data: JSON.stringify(problemData),
+                success: function (data) {
+                    // 성공적으로 서버에 문제를 추가한 경우의 처리 로직
+                    $('#problems').append('<li>' + name + '<button onclick=\'testProblem("' + name + '", "' +
+                        escapeSpecialChars(description) + '", "' + escapeSpecialChars(code) + '")\' class=\'btn btn-primary btn-sm ml-2\'>Test</button></li>');
+                    showProblems();
+                    alert(data); // 성공 메시지 표시
+                },
+                error: function (error) {
+                    // 서버에 문제를 추가하는 중 오류가 발생한 경우의 처리 로직
+                    alert('Error adding problem: ' + error.responseText);
+                }
+
+            });
+        }
+    }
+
+    var currentProblemName;
+
+    function testProblem(name) {
+        // Clear existing problem details first
+        $('#name').empty();
+        $('#description').empty();
+        $('#output').empty();
+        $('#Queryresult').empty();
+        // Set the problem name
+        $('#name').text(name);
+
+
+        // Assign the current problem name to the global variable
+        currentProblemName = name;
+
+        // Make an AJAX request to get the problem description
+        $.ajax({
+            type: 'GET',
+            url: '/api/problems/getDescription', // 새로운 엔드포인트 추가 필요
+            data: { name: name },
+            success: function (description) {
+                // Set the problem description
+                $('#description').text(description);
+
+                // Continue to retrieve the output
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/problems/getOutput',
+                    data: { name: name },
+                    success: function (response) {
+                        $("#output").text(response);  // Display the output on the webpage
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        alert('Error getting problem output');
+                    }
+                });
+            },
+            error: function (error) {
+                console.error(error);
+                alert('Error getting problem description');
+            }
+        });
+        $('#code').keydown(function (e) {
+            if (e.keyCode === 9) {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                var value = $(this).val();
+                $(this).val(value.substring(0, start) + "    " + value.substring(end));
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+        // Show the codebox
+        $('#codebox').show();
+    }
+
+
+    function escapeSpecialChars(input) {
+        // 특수 문자를 이스케이프 처리
+        return input.replace(/[\n\r\t"']/g, function (match) {
+            return {
+                '\n': '\\n',
+                '\r': '\\r',
+                '\t': '\\t',
+                '"': '\\"',
+                "'": "\\'"
+            }[match];
+        });
+    }
+
+    function del() {
+        var delName = prompt("Delete problem name : ");
+        if (delName) {
+            $.ajax({
+                type: 'DELETE', // HTTP DELETE 요청을 보냅니다.
+                url: '/api/problems/delete', // 삭제 API 엔드포인트 URL
+                data: { name: delName }, //이 내용을 RequestParam으로 읽어들임
+                success: function (response) {
+                    // 서버로부터 삭제 결과를 받았을 때의 처리 로직
+                    alert('Problem deleted successfully.');
+                    // 삭제된 문제를 화면에서도 제거
+                    $("#problems li").filter(function () { return $.text([this]) === delName; }).remove();
+                    $("#name li").filter(function () { return $.text([this]) === delName; }).remove();
+                    $("#description li").filter(function () { return $.text([this]) === delName; }).remove();
+                    // 문제가 모두 삭제되었을 경우, 코드 상자를 숨깁니다.
+                    if ($('#problems li').length === 0) {
+                        $('#codebox').hide();
+                    }
+                },
+                error: function (error) {
+                    // 삭제 작업 중 오류가 발생한 경우의 처리 로직
+                    alert('Error deleting problem: ' + error.responseText);
+                }
+            });
+        }
+    }
+    function utf8_to_b64(str) {
+        return window.btoa(unescape(encodeURIComponent(str)));
+    }
+
+    function send() { // 변경점 : 기존 방식과 다른 utf8_to_b64 사용 이유: 코드가 길면 작동X
+        $('#Queryresult').empty();
+        var code = document.getElementById('code').value;
+        var usercode = escapeSpecialChars(code)
+        if (usercode && currentProblemName) {
+            console.log("Code:", usercode); // 코드 변수 값을 찍어줍니다.
+            console.log("Name:", currentProblemName); // name 변수 값을 찍어줍니다.
+            //크롬 관리자 모드 들어가서 console 누르면 돼
+
+            var submitData = {
+                code: utf8_to_b64(usercode), // Base64 인코딩
+                name: currentProblemName // 전역 변수 사용
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/submit', // REST API 엔드포인트 URL
+                contentType: 'application/json',
+                data: JSON.stringify(submitData),
+                success: function (data) {
+                    console.log(data);
+                    // 성공적으로 서버에 코드를 제출한 경우의 처리 로직
+                    if(data === "Correct"){
+                        $('#Queryresult').append("<p class='correct'>Correct</p>");
+                    } else if(data === "Incorrect") {
+                        $('#Queryresult').append("<p class='incorrect'>Incorrect</p>");
+                    } else if(data.error){
+                        $('#Queryresult').append('<p>Error : '+data.error+'</p>');
+                    }
+
+                },
+                error: function (error) {
+                    // 서버에 코드를 제출하는 중 오류가 발생한 경우의 처리 로직
+                    alert('Error submitting code: ' + error.responseText);
+                    console.error('Error submitting code: ' + error.responseText);
+                }
+            });
+        }
+    }
+
+
+</script>
+</body>
+</html>
