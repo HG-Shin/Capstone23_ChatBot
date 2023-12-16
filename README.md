@@ -5,7 +5,46 @@
 - 20187098 이지형
 - 20207131 조윤선
 
-## <u>Teamate</u> Project Background
+## 📜 서비스 내용
+프로그래밍 수업을 처음 들어 어려움이 있는 학생들을 조금이라도 돕고자 시작한 프로젝트입니다.  
+해당 프로젝트에서 제공하는 서비스는 크게 2가지입니다.
+  1. 웹&앱 환경에서 학생들의 질문에 대한 답을 제공하는 챗봇.
+  2. 웹에서 간단한 코딩 실습 환경을 제공하는 온라인 저지 시스템.   
+  
+대학 내의 파이썬 수업과 연계하여 직접 학생들에게 질문을 받고 답변을 만들어 5000개 이상의 Q&A 데이터로 학습을 진행했습니다.  
+실제 수업에 적용하여 학생들이 사용하였고 피드백을 받아 보완시키는 과정이 있었습니다.
+
+## 💻 기술 스택
+<h4> Platforms & Languages </h4>
+<div align="left">
+	<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
+    	<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+    	<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
+    	<img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
+    	<img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white">
+	<img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">
+    	<img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">	
+</div>
+
+<h4> Tools </h4>
+<div align=left>
+	<img src="https://img.shields.io/badge/Intellij%20IDE-000000?style=for-the-badge&logo=intellijidea&logoColor=white" />
+	<img src="https://img.shields.io/badge/PyCharm-000000?style=for-the-badge&logo=PyCharm&logoColor=white"/>
+    	<img src="https://img.shields.io/badge/Visual Studio Code-007ACC?style=for-the-badge&logo=Visual Studio Code&logoColor=white"/>
+	<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white" />
+</div>
+
+## 💡 성장 경험
+### 서비스 장애 발생 대처
+학생들이 과제를 제출하거나 기말고사 예상 문제를 풀거나 하는 등 다양한 상황에서 서버 문제가 발생했었고 해당 문제의 원인을 찾고 신속하게 해결하고자 하는 경험을 했었습니다.  
+    
+### 팀원들과의 의견 충돌
+아이디어 선정 과정부터 프로젝트를 마무리하는 과정까지 팀원들과의 의견이 대립되는 경우가 여럿 발생하였고 서로의 주장에 근거를 뒷받침하여 설득하거나 합의점을 찾는 등 의사소통의 방법들을 배웠고, 모든 의사결정은 좀 더 나은 서비스를 위한 것이 될 수 있도록 노력하였습니다.
+
+---
+---
+---
+## Project Background
 - ### 필요성
   - 학습에 어려움이 있는 학생들에게 개인별 맞춤형 학습 서비스를 제공함으로써 학습능력 향상
   - 학생이 원하면 언제든 시공간의 제약을 받지 않고 부족한 부분을 도움 받을 수 있도록 챗봇을 개발하여 학습 적응 지원
@@ -40,29 +79,6 @@
 
   - ### 매주 수집한 학생데이터로 챗봇 자동 업데이트
   ![과제제출_봇](https://github.com/HBNU-SWUNIV/come-capstone23-edubot/assets/52690408/a3e68845-9f46-4f54-881f-bdb18ad8d61c)
-
-
-## 💻 Tech Stack
-<h4> Platforms & Languages </h4>
-
-<div align="left">
-	<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
-    <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-    <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
-    <img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">
-    <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
-    <img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white">
-    <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
-	
-</div>
-
-<h4> Tools </h4>
-<div align=left>
-	<img src="https://img.shields.io/badge/Intellij%20IDE-000000?style=flat&logo=intellijidea&logoColor=white" />
-	<img src="https://img.shields.io/badge/PyCharm-000000?style=flat-square&logo=PyCharm&logoColor=white"/>
-    <img src="https://img.shields.io/badge/Visual Studio Code-007ACC?style=flat-square&logo=Visual Studio Code&logoColor=white"/>
-	<img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white" />
-</div>
   
 ## Conclusion
   - 컴퓨터공학과 1학년 파이썬 수업에서 학생들에게 질문을 받아 답변해주며 5000개 이상의 Q&A 데이터를 확보하고 모델 학습에 사용함
